@@ -11,10 +11,10 @@ function applyTheme(theme) {
   toggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
 }
 
-applyTheme(localStorage.getItem("careercanvas-theme") === "dark" ? "dark" : "light");
+applyTheme(localStorage.getItem("careersignal-theme") === "dark" ? "dark" : "light");
 $("themeToggle").addEventListener("click", () => {
   const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  localStorage.setItem("careercanvas-theme", nextTheme);
+  localStorage.setItem("careersignal-theme", nextTheme);
   applyTheme(nextTheme);
 });
 
@@ -43,7 +43,7 @@ function render(data) {
 }
 function renderAnalysis(analysis) {
   const panel = $("analysisPanel");
-  if (!analysis) { panel.innerHTML = `<p class="eyebrow">EXTRACTION ENGINE</p><h2>Upload a resume to unlock evidence analysis.</h2><p>CareerCanvas will extract selectable text, detect skills and sections, then use those signals to improve your profile.</p>`; return; }
+  if (!analysis) { panel.innerHTML = `<p class="eyebrow">EXTRACTION ENGINE</p><h2>Upload a resume to unlock evidence analysis.</h2><p>CareerSignal will extract selectable text, detect skills and sections, then use those signals to improve your profile.</p>`; return; }
   const statusClass = analysis.status === "extracted" ? "analysis-good" : "analysis-warn";
   panel.innerHTML = `<div class="analysis-heading"><div><p class="eyebrow">EXTRACTION ENGINE</p><h2>Resume intelligence</h2></div><strong class="${statusClass}">${analysis.completeness_score}% complete</strong></div><p>${escapeHtml(analysis.message)}</p><div class="analysis-progress"><span style="width:${analysis.completeness_score}%"></span></div><div class="analysis-grid"><div><small>DETECTED SKILLS</small><strong>${analysis.detected_skills.length ? analysis.detected_skills.map(escapeHtml).join(" · ") : "None detected"}</strong></div><div><small>SECTIONS FOUND</small><strong>${analysis.sections.length ? analysis.sections.map(escapeHtml).join(" · ") : "None detected"}</strong></div><div><small>CONTACT SIGNAL</small><strong>${escapeHtml(analysis.contact.email || analysis.contact.phone || "No contact detected")}</strong></div><div><small>TEXT SIGNAL</small><strong>${analysis.word_count || 0} words · ${analysis.status === "extracted" ? "evaluated" : "needs text"}</strong></div></div>${analysis.text_preview ? `<details><summary>View extracted text preview</summary><p class="preview">${escapeHtml(analysis.text_preview)}</p></details>` : ""}`;
 }

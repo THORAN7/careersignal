@@ -3,13 +3,13 @@ requires = ["setuptools>=69,<76"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "careercanvas"
+name = "careersignal"
 version = "0.1.0"
-description = "Local-first personalized career content generator for students."
+description = "Local-first AI career intelligence for students."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-authors = [{ name = "CareerCanvas Contributors" }]
+authors = [{ name = "CareerSignal Contributors" }]
 dependencies = [
   "fastapi>=0.115,<1",
   "pydantic>=2.8,<3",
@@ -48,4 +48,3 @@ src = ["src", "tests"]
 python_version = "3.11"
 strict = true
 files = ["src"]
-

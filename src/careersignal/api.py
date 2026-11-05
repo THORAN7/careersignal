@@ -1,4 +1,4 @@
-"""FastAPI application for the local-first CareerCanvas workspace."""
+"""FastAPI application for the local-first CareerSignal workspace."""
 
 import base64
 import binascii
@@ -40,7 +40,7 @@ ALLOWED_EXTENSIONS = {
 }
 DATA_LOCK = Lock()
 
-app = FastAPI(title="CareerCanvas", version="0.2.0")
+app = FastAPI(title="CareerSignal", version="0.2.0")
 
 EMPTY_PROFILE: dict[str, Any] = {
     "name": "",
@@ -205,7 +205,7 @@ def report_for(profile: dict[str, Any]) -> dict[str, Any]:
         f"{', '.join(skills[:3]) or 'curiosity and structured thinking'} with practical project experience. "
         "Their strongest next step is to turn that evidence into outcomes a hiring team can understand."
         if has_inputs
-        else "Start by entering your details or uploading a resume/project file. CareerCanvas will build your personalized profile from your own evidence."
+        else "Start by entering your details or uploading a resume/project file. CareerSignal will build your personalized profile from your own evidence."
     )
     gap = (
         "Make your evidence measurable."
@@ -277,7 +277,7 @@ def demo_state(profile: dict[str, Any] | None = None) -> dict[str, Any]:
 
 @app.get("/api/health")
 def health() -> dict[str, bool | str]:
-    return {"ok": True, "service": "careercanvas", "storage": str(PROFILE_FILE)}
+    return {"ok": True, "service": "careersignal", "storage": str(PROFILE_FILE)}
 
 
 @app.get("/api/profile")
@@ -395,4 +395,4 @@ def static_asset(asset_path: str) -> FileResponse:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("careercanvas.api:app", host=settings.host, port=settings.port)
+    uvicorn.run("careersignal.api:app", host=settings.host, port=settings.port)

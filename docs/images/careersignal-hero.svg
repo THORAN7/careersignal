@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 420" role="img" aria-labelledby="title desc">
+  <title id="title">CareerSignal: turn evidence into direction</title>
+  <desc id="desc">An animated gradient banner with the CareerSignal name and a flowing signal line.</desc>
+  <defs>
+    <linearGradient id="background" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#101827">
+        <animate attributeName="stop-color" values="#101827;#172554;#101827" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#6d28d9">
+        <animate attributeName="stop-color" values="#6d28d9;#0f766e;#6d28d9" dur="8s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <linearGradient id="signal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#c4b5fd"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="7" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1400" height="420" rx="28" fill="url(#background)"/>
+  <circle cx="1180" cy="70" r="180" fill="#a78bfa" opacity=".12">
+    <animate attributeName="r" values="180;220;180" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <path d="M0 305 C120 305 105 205 220 205 S325 325 440 325 S560 130 690 130 S795 260 920 260 S1030 165 1140 165 S1270 245 1400 245" fill="none" stroke="url(#signal)" stroke-width="5" filter="url(#glow)" stroke-linecap="round" stroke-dasharray="18 14">
+    <animate attributeName="stroke-dashoffset" from="0" to="-160" dur="4s" repeatCount="indefinite"/>
+  </path>
+  <text x="84" y="146" fill="#a5b4fc" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" letter-spacing="5">PERSONALIZED CAREER INTELLIGENCE</text>
+  <text x="80" y="230" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="800">CareerSignal</text>
+  <text x="86" y="276" fill="#dbeafe" font-family="Arial, Helvetica, sans-serif" font-size="24">Turn your evidence into a clearer career direction.</text>
+</svg>

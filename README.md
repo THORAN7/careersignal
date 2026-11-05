@@ -1,35 +1,85 @@
-# CareerCanvas
+<div align="center">
 
-> Local-first, AI-assisted career content generation for students.
+<a href="https://github.com/THORAN7/career-signal">
+  <img src="docs/images/careersignal-hero.svg" alt="CareerSignal animated banner" width="100%">
+</a>
 
-CareerCanvas turns a student's skills, academic interests, career goals, project evidence, and optional resume into a professional summary, computed skill-gap report, learning plan, and interview preparation pack. Every format is rendered from one canonical career report so the UI, JSON, Markdown, DOCX, and PDF cannot drift apart.
+# CareerSignal
 
-## Status
+### Turn your evidence into a clearer career direction.
 
-CareerCanvas starts with no fictional or pre-filled runtime student. Users either enter their own details or upload their own evidence. Uploading a text-based PDF, DOCX, TXT, Markdown, CSV, or JSON file extracts text locally, detects resume sections, finds common skills with word-boundary matching, identifies contact signals, calculates a completeness score, and merges detected skills into the profile. Scanned/image-only documents are identified clearly as requiring OCR.
+<p>
+  <strong>Local-first career intelligence for students.</strong><br>
+  Build a grounded professional profile from your skills, interests, goals, projects, and resume evidence.
+</p>
 
-## Quick start
+<p>
+  <a href="#-quick-start">Quick start</a> ·
+  <a href="#-how-it-works">How it works</a> ·
+  <a href="#-privacy--responsible-use">Privacy</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-ready-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)
+![Local first](https://img.shields.io/badge/privacy-local--first-8b5cf6?style=for-the-badge)
+
+</div>
+
+<br>
+
+> **CareerSignal is not a generic resume generator.** It analyzes the evidence you provide, identifies the distance between your current signal and a target role, and turns that distance into an actionable learning and interview plan.
+
+## ✨ What it does
+
+| Input | Output |
+| --- | --- |
+| Skills and academic interests | A personalized professional summary |
+| Career goals and target role | Computed skill-gap signals |
+| Projects and achievements | Prioritized learning recommendations |
+| Resume or project evidence | Role-aware interview preparation |
+
+### Built for a strong portfolio
+
+- **Evidence-aware** — upload PDF, DOCX, TXT, Markdown, CSV, or JSON files and extract useful signals locally.
+- **Grounded writing** — generated copy is based on the profile and evidence you actually provide.
+- **Privacy by default** — local storage, loopback binding, ignored runtime data, and no API key required for the default mode.
+- **No fictional starter profile** — every runtime profile begins empty and belongs to the user.
+- **Clean architecture** — `src/` layout, typed configuration, FastAPI routes, deterministic analysis, and automated checks.
+- **Animated experience** — responsive dashboard, processing states, theme toggle, and polished evidence feedback.
+
+## 🎬 Product flow
+
+```mermaid
+flowchart LR
+    A[Enter your story] --> B[Upload evidence]
+    B --> C[Extract text and signals]
+    C --> D[Analyze skills and goals]
+    D --> E[CareerSignal report]
+    E --> F[Summary]
+    E --> G[Skill gaps]
+    E --> H[Learning plan]
+    E --> I[Interview lab]
+```
+
+## 🚀 Quick start
 
 ### Windows PowerShell
 
-If `.venv` already exists, activate it instead of creating it again:
-
 ```powershell
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
-python -m uvicorn careercanvas.api:app --host 127.0.0.1 --port 8000 --reload
-```
-
-If you need a fresh environment, stop the server, deactivate the current environment,
-and recreate it:
-
-```powershell
-deactivate
-Remove-Item -Recurse -Force .venv
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-python -m uvicorn careercanvas.api:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn careersignal.api:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Open **http://127.0.0.1:8000**.
+
+If `.venv` is already active, do not recreate it. If port `8000` is busy, use:
+
+```powershell
+python -m uvicorn careersignal.api:app --host 127.0.0.1 --port 8010 --reload
 ```
 
 ### macOS/Linux
@@ -38,15 +88,12 @@ python -m uvicorn careercanvas.api:app --host 127.0.0.1 --port 8000 --reload
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev]"
-python -m uvicorn careercanvas.api:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn careersignal.api:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Open `http://127.0.0.1:8000`. The default mode is offline and requires no API key.
+### Quality commands
 
-### Make commands
-
-The repository includes a `Makefile` for macOS/Linux and environments where GNU Make
-is installed:
+GNU Make is supported on macOS, Linux, WSL, and Git Bash:
 
 ```bash
 make install
@@ -56,34 +103,71 @@ make lint
 make typecheck
 ```
 
-GNU Make is not included with standard Windows PowerShell. On Windows, use the direct
-Python commands above or run the Makefile through WSL/Git Bash with GNU Make installed.
+On standard Windows PowerShell, use the direct Python commands above.
 
-## Repository layout
+## 🧠 How it works
 
-- `src/careercanvas/` — typed application package
-- `static/` — dependency-free CareerCanvas frontend
-- `examples/` — fictional demo profiles only
-- `data/` — ignored local profiles, uploads, and role data
-- `tests/` — automated quality gates
-- `docs/` — architecture and project decisions
+1. **Start with your own signal.** Enter profile details or upload evidence.
+2. **Analyze locally.** CareerSignal extracts text from supported documents and detects sections, skills, contact signals, word count, and completeness.
+3. **Build a report.** Deterministic analysis combines your self-reported skills with evidence-derived signals.
+4. **Review and improve.** Use the gaps, learning plan, and interview prompts to strengthen your next application.
 
-## Privacy
+The current offline provider requires no credentials. Hosted LLM support is intentionally opt-in and should only be enabled after reviewing the data-sharing implications.
 
-Local profile data and uploads are ignored by Git and remain on the local machine by default. External LLM providers are opt-in and will be documented before that integration is enabled.
+## 🗂️ Repository layout
 
-## Evidence analysis
+```text
+career-signal/
+├── src/careersignal/       # FastAPI application package
+├── static/                 # Dependency-free frontend
+├── tests/                  # Automated tests
+├── examples/               # Fictional demo profile
+├── docs/                   # Decisions and visual assets
+├── data/                   # Ignored local runtime data
+├── pyproject.toml          # Packaging and tool configuration
+└── Makefile                # Repeatable developer commands
+```
 
-The upload workflow is an analysis step, not a file attachment placeholder:
+## 🔐 Privacy & responsible use
 
-1. The browser sends the selected file to `POST /api/uploads`.
-2. The API decodes and stores it in the ignored local `data/uploads/` directory.
-3. PDF text is extracted with `pypdf`; DOCX paragraphs and tables are extracted with `python-docx`; plain-text formats are decoded directly.
-4. The analyzer detects sections, skills, email/phone signals, word count, and a 0–100 completeness score.
-5. Detected skills are merged into the profile and all generated content is refreshed.
+- Runtime profiles and uploaded files stay under ignored `data/` by default.
+- The server binds to `127.0.0.1` by default.
+- Uploaded files are analyzed for text and career signals; image-only files are not falsely presented as extracted.
+- Never use generated wording to claim experience, achievements, skills, or qualifications you do not have.
+- CareerSignal provides guidance, not hiring guarantees. Review every generated statement before sharing it.
 
-Image-only PDFs and images are stored safely but do not claim to have been analyzed. OCR is a planned upgrade.
+## 🧪 Development
 
-## Responsible use
+```bash
+python -m pytest -q
+python -m ruff check .
+python -m ruff format --check .
+python -m mypy
+```
 
-Generated career content is guidance, not a guarantee. Review every claim before using it, and never present generated text as experience or achievement you did not earn.
+See [`docs/DECISIONS.md`](docs/DECISIONS.md) for architectural decisions and [`LICENSE`](LICENSE) for licensing terms.
+
+## 🗺️ Roadmap
+
+- [x] Local-first profile and evidence workflow
+- [x] PDF, DOCX, TXT, Markdown, CSV, and JSON extraction
+- [x] Word-boundary skill detection and upload analysis
+- [x] Responsive animated dashboard
+- [ ] Typed canonical `CareerReport` model
+- [ ] Role blueprint library and computed skill-gap engine
+- [ ] Markdown, DOCX, and PDF exports from one report object
+- [ ] Optional hosted LLM providers with grounded JSON output
+- [ ] Full CI matrix, Docker image, and accessibility test coverage
+
+## 🤝 Contributing
+
+Issues, documentation improvements, UI refinements, and test coverage are welcome. Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+
+## 📄 License
+
+CareerSignal is released under the [MIT License](LICENSE).
+
+<div align="center">
+  <br>
+  <sub>Built for students who want their next step to be clearer.</sub>
+</div>

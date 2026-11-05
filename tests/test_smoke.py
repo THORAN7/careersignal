@@ -1,7 +1,7 @@
 """Phase 1 packaging smoke tests."""
 
-from careercanvas.api import EMPTY_PROFILE, demo_state, report_for
-from careercanvas.config import settings
+from careersignal.api import EMPTY_PROFILE, demo_state, report_for
+from careersignal.config import settings
 
 
 def test_local_defaults_are_safe() -> None:
