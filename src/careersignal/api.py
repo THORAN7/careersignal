@@ -12,11 +12,14 @@ from typing import Any, cast
 
 from docx import Document
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
 
+from .analysis.report import build_report
 from .config import settings
+from .consistency import check_report
+from .exporters.render import to_docx, to_json, to_markdown, to_pdf
 
 ROOT = Path(__file__).resolve().parents[2]
 STATIC_DIR = ROOT / "static"
@@ -185,84 +188,9 @@ def analyse_evidence(name: str, content: bytes) -> dict[str, Any]:
 
 
 def report_for(profile: dict[str, Any]) -> dict[str, Any]:
-    skills = [clean(item) for item in profile.get("skills", []) if clean(item)]
-    role = clean(profile.get("target_role"), "Career explorer")
-    display_name = clean(profile.get("name"), "Your profile")
-    skill_text = " ".join(
-        skills + [clean(profile.get("interests")), clean(profile.get("goals"))]
-    ).lower()
-    technical = any(
-        word in skill_text
-        for word in ("python", "sql", "javascript", "data", "engineering", "software")
-    )
-    people = any(
-        word in skill_text for word in ("research", "communication", "leadership", "people", "team")
-    )
-    score = min(96, 58 + len(skills) * 7 + (7 if technical else 0) + (5 if people else 0))
-    has_inputs = bool(display_name != "Your profile" or skills or profile.get("resume_analysis"))
-    summary = (
-        f"{display_name} is an aspiring {role.lower()} who combines "
-        f"{', '.join(skills[:3]) or 'curiosity and structured thinking'} with practical project experience. "
-        "Their strongest next step is to turn that evidence into outcomes a hiring team can understand."
-        if has_inputs
-        else "Start by entering your details or uploading a resume/project file. CareerSignal will build your personalized profile from your own evidence."
-    )
-    gap = (
-        "Make your evidence measurable."
-        if profile.get("experience")
-        else "Build your first evidence story."
-    )
-    learning = [
-        {
-            "week": "01",
-            "title": "Clarify your strongest signal",
-            "detail": "Choose one project and write the problem, your contribution and the outcome.",
-            "outcome": "A concise case-study outline",
-            "completed": bool(profile["learning_completed"][0]),
-        },
-        {
-            "week": "02",
-            "title": "Close the highest-value gap",
-            "detail": gap,
-            "outcome": "One portfolio proof point",
-            "completed": bool(profile["learning_completed"][1]),
-        },
-        {
-            "week": "03",
-            "title": "Practice your career story",
-            "detail": "Answer the interview prompts using situation, action and result.",
-            "outcome": "A confident one-minute pitch",
-            "completed": bool(profile["learning_completed"][2]),
-        },
-    ]
-    questions = [
-        f"Tell me about a project where you used {skills[0] if skills else 'your strongest skill'}.",
-        "How did feedback change one of your decisions?",
-        "What would you improve if you had another week?",
-    ]
-    uploads = profile.get("uploads", [])
-    return {
-        "headline": f"{role} with a systems mindset.",
-        "score": score if has_inputs else 0,
-        "professional_summary": summary,
-        "summary": summary,
-        "strengths": skills[:3] or ["Curiosity", "Structured thinking", "Collaboration"],
-        "skill_gap_report": [
-            {
-                "priority": "HIGH",
-                "skill": gap,
-                "why": "Hiring teams trust specific evidence more than broad claims.",
-                "action": "Add a project result, metric or before-and-after example.",
-            }
-        ],
-        "learning_recommendations": learning,
-        "interview_preparation": {
-            "pitch": f"I bring {', '.join(skills[:2]) or 'curiosity and structured thinking'} to {role.lower()} problems, and I can show that through {clean(profile.get('experience'), 'my project work')}.",
-            "questions": questions,
-        },
-        "evidence_files": uploads,
-        "resume_analysis": profile.get("resume_analysis"),
-    }
+    report = build_report(profile)
+    report.consistency_warnings = check_report(report)
+    return report.model_dump(mode="json")
 
 
 def state() -> dict[str, Any]:
@@ -284,6 +212,30 @@ def health() -> dict[str, bool | str]:
 def get_profile() -> dict[str, Any]:
     with DATA_LOCK:
         return state()
+
+
+@app.get("/api/report/{format_name}")
+def export_report(format_name: str) -> Response:
+    """Export the same canonical report used by the dashboard."""
+    report = build_report(load_profile())
+    report.consistency_warnings = check_report(report)
+    if format_name == "json":
+        return JSONResponse(content=json.loads(to_json(report)))
+    if format_name == "markdown":
+        return Response(to_markdown(report), media_type="text/markdown")
+    if format_name == "docx":
+        return Response(
+            to_docx(report),
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={"Content-Disposition": "attachment; filename=careersignal-report.docx"},
+        )
+    if format_name == "pdf":
+        return Response(
+            to_pdf(report),
+            media_type="application/pdf",
+            headers={"Content-Disposition": "attachment; filename=careersignal-report.pdf"},
+        )
+    raise HTTPException(status_code=404, detail="Supported formats: json, markdown, docx, pdf.")
 
 
 @app.post("/api/profile")

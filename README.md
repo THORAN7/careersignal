@@ -153,11 +153,37 @@ See [`docs/DECISIONS.md`](docs/DECISIONS.md) for architectural decisions and [`L
 - [x] PDF, DOCX, TXT, Markdown, CSV, and JSON extraction
 - [x] Word-boundary skill detection and upload analysis
 - [x] Responsive animated dashboard
-- [ ] Typed canonical `CareerReport` model
-- [ ] Role blueprint library and computed skill-gap engine
-- [ ] Markdown, DOCX, and PDF exports from one report object
-- [ ] Optional hosted LLM providers with grounded JSON output
-- [ ] Full CI matrix, Docker image, and accessibility test coverage
+- [x] Typed canonical `CareerReport` model
+- [x] Role blueprint library and computed skill-gap engine
+- [x] Markdown, DOCX, and PDF exports from one report object
+- [x] Optional OpenAI-compatible provider with grounded JSON output
+- [x] CI matrix for Python 3.11–3.13, Docker build, and accessibility contract tests
+
+## 📦 Export API
+
+The dashboard and every export are generated from the same `CareerReport` object:
+
+```text
+GET /api/report/json
+GET /api/report/markdown
+GET /api/report/docx
+GET /api/report/pdf
+```
+
+Role blueprints live in `data/roles/` and currently cover software engineering,
+data, ML, frontend, product, UX, cybersecurity, and DevOps paths. The default
+engine is deterministic and offline. Hosted generation is opt-in through the
+provider interface and receives the grounded report context rather than inventing
+skills, employers, degrees, or achievements.
+
+## 🐳 Docker
+
+```bash
+docker compose up --build
+```
+
+The container runs as a non-root user and includes a health check at
+`/api/health`.
 
 ## 🤝 Contributing
 

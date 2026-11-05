@@ -29,6 +29,7 @@ data/*
 !data/roles/
 data/roles/*
 !data/roles/.gitkeep
+!data/roles/*.json
 uploads/
 *.pdf
 *.doc
@@ -39,4 +40,3 @@ uploads/
 build/
 dist/
 *.whl
-
