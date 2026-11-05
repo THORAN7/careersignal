@@ -31,11 +31,18 @@ class StudentProfile(BaseModel):
 
 class ResumeAnalysis(BaseModel):
     status: str
+    message: str = ""
     detected_skills: list[str] = Field(default_factory=list)
     sections: list[str] = Field(default_factory=list)
+    contact: "ContactSignals" = Field(default_factory=lambda: ContactSignals())
     completeness_score: int = Field(ge=0, le=100)
     word_count: int = Field(ge=0)
     inferred_name: str = ""
+
+
+class ContactSignals(BaseModel):
+    email: str = ""
+    phone: str = ""
 
 
 class RequiredSkill(BaseModel):
