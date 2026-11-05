@@ -3,11 +3,14 @@
 The typed domain and generation pipeline are introduced in later phases.
 """
 
+import base64
+import binascii
 import json
+import re
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 
 from .config import settings
@@ -15,6 +18,21 @@ from .config import settings
 ROOT = Path(__file__).resolve().parents[2]
 STATIC_DIR = ROOT / "static"
 EXAMPLE_PROFILE = ROOT / "examples" / "sample_profile.json"
+UPLOAD_DIR = ROOT / "data" / "uploads"
+MAX_UPLOAD_BYTES = 6 * 1024 * 1024
+ALLOWED_EXTENSIONS = {
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".txt",
+    ".md",
+    ".csv",
+    ".json",
+    ".zip",
+    ".png",
+    ".jpg",
+    ".jpeg",
+}
 
 app = FastAPI(title="CareerCanvas", version="0.1.0")
 
@@ -77,6 +95,36 @@ async def update_profile(request: Request) -> dict[str, Any]:
     if isinstance(profile.get("skills"), str):
         profile["skills"] = [item.strip() for item in profile["skills"].split(",") if item.strip()]
     return demo_state(profile)
+
+
+@app.post("/api/uploads")
+async def upload_evidence(request: Request) -> dict[str, Any]:
+    """Accept the current frontend's base64 upload payload.
+
+    Full resume extraction is introduced with the Phase 6 parser. This endpoint
+    persists the evidence locally now so the UI does not fail during migration.
+    """
+
+    payload = await request.json()
+    name = Path(str(payload.get("name", ""))).name
+    encoded = payload.get("content", "")
+    extension = Path(name).suffix.lower()
+    if not name or extension not in ALLOWED_EXTENSIONS or not isinstance(encoded, str):
+        raise HTTPException(status_code=400, detail="Unsupported or invalid upload.")
+    try:
+        content = base64.b64decode(encoded, validate=True)
+    except (ValueError, binascii.Error) as error:
+        raise HTTPException(
+            status_code=400, detail="Upload content is not valid base64."
+        ) from error
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Upload exceeds the 6 MB limit.")
+    safe_name = re.sub(r"[^A-Za-z0-9._-]", "-", name).strip(".-")
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    (UPLOAD_DIR / safe_name).write_bytes(content)
+    profile_state = demo_state()
+    profile_state["report"]["evidence_files"] = [{"name": safe_name, "size": len(content)}]
+    return profile_state
 
 
 @app.get("/", include_in_schema=False)
