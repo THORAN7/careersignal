@@ -42,6 +42,22 @@ DATA_LOCK = Lock()
 
 app = FastAPI(title="CareerCanvas", version="0.2.0")
 
+EMPTY_PROFILE: dict[str, Any] = {
+    "name": "",
+    "degree": "",
+    "year": "",
+    "school": "",
+    "skills": [],
+    "interests": "",
+    "goals": "",
+    "experience": "",
+    "target_role": "",
+    "learning_completed": [False, False, False],
+    "uploads": [],
+    "updated_at": None,
+    "resume_analysis": None,
+}
+
 
 def now() -> str:
     return datetime.now(UTC).isoformat()
@@ -54,14 +70,13 @@ def clean(value: Any, fallback: str = "") -> str:
 def load_profile() -> dict[str, Any]:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     if not PROFILE_FILE.exists():
-        PROFILE_FILE.write_text(EXAMPLE_PROFILE.read_text(encoding="utf-8"), encoding="utf-8")
+        PROFILE_FILE.write_text(json.dumps(EMPTY_PROFILE, indent=2), encoding="utf-8")
     try:
         profile = cast(dict[str, Any], json.loads(PROFILE_FILE.read_text(encoding="utf-8")))
     except (OSError, json.JSONDecodeError) as error:
         raise HTTPException(status_code=500, detail="Saved profile could not be read.") from error
-    profile.setdefault("learning_completed", [False, False, False])
-    profile.setdefault("uploads", [])
-    profile.setdefault("updated_at", None)
+    for key, value in EMPTY_PROFILE.items():
+        profile.setdefault(key, value)
     return profile
 
 
@@ -133,6 +148,10 @@ def analyse_evidence(name: str, content: bytes) -> dict[str, Any]:
     ]
     email = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", text)
     phone = re.search(r"(?:\+?\d[\d\s().-]{8,}\d)", text)
+    first_line = next((line.strip() for line in text.splitlines() if line.strip()), "")
+    inferred_name = (
+        first_line if first_line and "@" not in first_line and len(first_line.split()) <= 5 else ""
+    )
     word_count = len(re.findall(r"\b[\w'-]+\b", text))
     status = "extracted" if word_count >= 8 else "stored"
     if Path(name).suffix.lower() in {".pdf", ".docx"} and not text:
@@ -161,12 +180,14 @@ def analyse_evidence(name: str, content: bytes) -> dict[str, Any]:
         },
         "text_preview": text[:900],
         "word_count": word_count,
+        "inferred_name": inferred_name,
     }
 
 
 def report_for(profile: dict[str, Any]) -> dict[str, Any]:
     skills = [clean(item) for item in profile.get("skills", []) if clean(item)]
     role = clean(profile.get("target_role"), "Career explorer")
+    display_name = clean(profile.get("name"), "Your profile")
     skill_text = " ".join(
         skills + [clean(profile.get("interests")), clean(profile.get("goals"))]
     ).lower()
@@ -178,7 +199,14 @@ def report_for(profile: dict[str, Any]) -> dict[str, Any]:
         word in skill_text for word in ("research", "communication", "leadership", "people", "team")
     )
     score = min(96, 58 + len(skills) * 7 + (7 if technical else 0) + (5 if people else 0))
-    summary = f"{profile['name']} is an aspiring {role.lower()} who combines {', '.join(skills[:3]) or 'curiosity and structured thinking'} with practical project experience. Their strongest next step is to turn that evidence into outcomes a hiring team can understand."
+    has_inputs = bool(display_name != "Your profile" or skills or profile.get("resume_analysis"))
+    summary = (
+        f"{display_name} is an aspiring {role.lower()} who combines "
+        f"{', '.join(skills[:3]) or 'curiosity and structured thinking'} with practical project experience. "
+        "Their strongest next step is to turn that evidence into outcomes a hiring team can understand."
+        if has_inputs
+        else "Start by entering your details or uploading a resume/project file. CareerCanvas will build your personalized profile from your own evidence."
+    )
     gap = (
         "Make your evidence measurable."
         if profile.get("experience")
@@ -215,7 +243,7 @@ def report_for(profile: dict[str, Any]) -> dict[str, Any]:
     uploads = profile.get("uploads", [])
     return {
         "headline": f"{role} with a systems mindset.",
-        "score": score,
+        "score": score if has_inputs else 0,
         "professional_summary": summary,
         "summary": summary,
         "strengths": skills[:3] or ["Curiosity", "Structured thinking", "Collaboration"],
@@ -322,6 +350,8 @@ async def upload_evidence(request: Request) -> dict[str, Any]:
         profile["resume_analysis"] = analyse_evidence(safe_name, content)
         detected_skills = profile["resume_analysis"]["detected_skills"]
         profile["skills"] = list(dict.fromkeys(profile.get("skills", []) + detected_skills))[:15]
+        if not profile.get("name") and profile["resume_analysis"].get("inferred_name"):
+            profile["name"] = profile["resume_analysis"]["inferred_name"]
         profile["updated_at"] = now()
         save_profile(profile)
         return state()

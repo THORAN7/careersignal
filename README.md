@@ -6,7 +6,7 @@ CareerCanvas turns a student's skills, academic interests, career goals, project
 
 ## Status
 
-CareerCanvas currently includes a working local profile API, evidence upload flow, and animated resume intelligence panel. Uploading a text-based PDF, DOCX, TXT, Markdown, CSV, or JSON file extracts text locally, detects resume sections, finds common skills with word-boundary matching, identifies contact signals, calculates a completeness score, and merges detected skills into the profile. Scanned/image-only documents are identified clearly as requiring OCR.
+CareerCanvas starts with no fictional or pre-filled runtime student. Users either enter their own details or upload their own evidence. Uploading a text-based PDF, DOCX, TXT, Markdown, CSV, or JSON file extracts text locally, detects resume sections, finds common skills with word-boundary matching, identifies contact signals, calculates a completeness score, and merges detected skills into the profile. Scanned/image-only documents are identified clearly as requiring OCR.
 
 ## Quick start
 

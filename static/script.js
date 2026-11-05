@@ -27,10 +27,11 @@ async function api(path, options) {
 function render(data) {
   state = data;
   const { profile, report } = data;
-  $("name").textContent = profile.name; $("meta").textContent = `${profile.degree} · ${profile.year} · ${profile.school}`;
-  $("avatar").textContent = profile.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase();
+  const displayName = profile.name || "Your profile";
+  $("name").textContent = displayName; $("meta").textContent = profile.degree ? `${profile.degree} · ${profile.year} · ${profile.school}` : "Add your details or upload evidence to begin";
+  $("avatar").textContent = profile.name ? profile.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase() : "?";
   $("chips").innerHTML = report.strengths.map((item) => `<span>${escapeHtml(item)}</span>`).join("");
-  $("score").textContent = `${report.score}/100`; $("headline").textContent = report.headline; $("summary").textContent = report.professional_summary;
+  $("score").textContent = report.score ? `${report.score}/100` : "—"; $("headline").textContent = report.score ? report.headline : "Your career signal starts here."; $("summary").textContent = report.professional_summary;
   $("strengths").innerHTML = report.strengths.map((item) => `<span>✦ ${escapeHtml(item)}</span>`).join("");
   $("gaps").innerHTML = report.skill_gap_report.map((item) => `<article class="gap panel"><div><span class="priority">${escapeHtml(item.priority)}</span><h3>${escapeHtml(item.skill)}</h3></div><p>${escapeHtml(item.why)}</p><small>Next action: ${escapeHtml(item.action)}</small></article>`).join("");
   $("learning").innerHTML = report.learning_recommendations.map((item, index) => `<button class="learning-step ${item.completed ? "done" : ""}" data-index="${index}"><b>${item.completed ? "✓" : item.week}</b><span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail)}</small><em>${escapeHtml(item.outcome)}</em></span><i>→</i></button>`).join("");
@@ -70,3 +71,6 @@ document.getElementById("fileInput").addEventListener("change", async (event) =>
   event.target.value = "";
 });
 api("/api/profile").then(render).catch((error) => { $("headline").textContent = error.message; });
+api("/api/profile").then((data) => {
+  if (!data.profile.name && !data.profile.uploads.length) openEditor();
+});
