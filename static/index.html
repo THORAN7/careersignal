@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CareerCanvas | Personalized career intelligence</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar"><a class="logo" href="#"><span>✦</span> CareerCanvas</a><span class="save-state" id="saveState">Local workspace</span></header>
+  <main>
+    <section class="hero"><div><p class="eyebrow">PERSONALIZED CAREER INTELLIGENCE</p><h1>Your next career move,<br><em>made clearer.</em></h1><p class="hero-copy">Build a profile that connects who you are, what you study and where you want to go.</p></div><button class="button primary" id="editButton">Edit my profile <span>→</span></button></section>
+    <section class="profile-strip panel"><div class="avatar" id="avatar">AS</div><div><h2 id="name">Loading profile</h2><p id="meta"></p><div class="chips" id="chips"></div></div><div class="score"><strong id="score">--</strong><small>career signal</small></div></section>
+    <section class="evidence panel"><div><p class="eyebrow">EVIDENCE VAULT</p><h2>Bring your real work into the signal.</h2><p>Upload a resume, portfolio case study, transcript or project folder. Files stay in this local workspace and become part of your career context.</p></div><div class="upload-actions"><label class="upload-drop" for="fileInput"><span>＋</span><strong>Upload and evaluate</strong><small>PDF, DOCX, TXT, ZIP, images · up to 6 MB</small></label><input id="fileInput" type="file" multiple accept=".pdf,.doc,.docx,.txt,.md,.csv,.json,.zip,.png,.jpg,.jpeg" hidden><div id="fileList" class="file-list"></div></div></section>
+    <section class="analysis panel" id="analysisPanel"></section>
+    <div class="layout">
+      <section><div class="section-title"><p class="eyebrow">YOUR GENERATED PROFILE</p><h2 id="headline">Reading your signal...</h2></div><article class="summary panel"><p class="label">PROFESSIONAL SUMMARY</p><p id="summary"></p><div class="strengths"><p class="label">CORE STRENGTHS</p><div id="strengths"></div></div></article>
+        <div class="section-title gap-title"><p class="eyebrow">CLOSE THE DISTANCE</p><h2>Skill-gap report</h2></div><div id="gaps" class="cards"></div>
+        <div class="section-title gap-title"><p class="eyebrow">A PATH YOU CAN FOLLOW</p><h2>Learning recommendations</h2></div><div id="learning" class="learning"></div>
+      </section>
+      <aside><div class="section-title"><p class="eyebrow">INTERVIEW LAB</p><h2>Show up ready.</h2></div><article class="interview panel"><p class="label">YOUR ONE-LINER</p><blockquote id="pitch"></blockquote><p class="label">PRACTICE PROMPTS</p><div id="questions"></div><button class="button dark" id="downloadButton">Download complete report <span>↓</span></button></article></aside>
+    </div>
+  </main>
+  <div class="modal-backdrop" id="backdrop"><div class="modal panel"><button class="close" id="close">×</button><p class="eyebrow">YOUR INPUTS SHAPE THE OUTPUT</p><h2>Build your career profile</h2><form id="profileForm"><label>Name<input name="name" required></label><div class="row"><label>Degree<input name="degree" required></label><label>Year<input name="year" required></label></div><label>School<input name="school" required></label><label>Skills <small>comma separated</small><input name="skills" required></label><label>Academic interests<textarea name="interests" rows="2" required></textarea></label><label>Career goals<textarea name="goals" rows="2" required></textarea></label><label>Project evidence<textarea name="experience" rows="2" required></textarea></label><button class="button primary" type="submit">Generate my profile <span>→</span></button></form></div></div>
+  <script src="script.js"></script>
+</body>
+</html>

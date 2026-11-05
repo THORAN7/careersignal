@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Environments and secrets
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local application data and uploads
+data/*
+!data/.gitkeep
+!data/roles/
+data/roles/*
+!data/roles/.gitkeep
+uploads/
+*.pdf
+*.doc
+*.docx
+*.resume
+
+# Build artifacts
+build/
+dist/
+*.whl
+

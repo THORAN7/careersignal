@@ -1,0 +1,12 @@
+{
+  "name": "Maya Chen",
+  "degree": "BSc Information Systems",
+  "year": "3rd year",
+  "school": "Northbridge University",
+  "skills": ["Python", "SQL", "User research"],
+  "interests": "Responsible AI, analytics and accessible education tools",
+  "goals": "Become a data product manager who can translate evidence into useful decisions",
+  "experience": "Built a tutoring analytics dashboard and interviewed 18 students to improve its design.",
+  "target_role": "Product Manager"
+}
+
