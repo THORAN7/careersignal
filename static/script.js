@@ -1,10 +1,27 @@
 const $ = (id) => document.getElementById(id);
 let state;
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
+
+function applyTheme(theme) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  const toggle = $("themeToggle");
+  toggle.setAttribute("aria-pressed", String(isDark));
+  toggle.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+  toggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
+}
+
+applyTheme(localStorage.getItem("careercanvas-theme") === "dark" ? "dark" : "light");
+$("themeToggle").addEventListener("click", () => {
+  const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  localStorage.setItem("careercanvas-theme", nextTheme);
+  applyTheme(nextTheme);
+});
+
 async function api(path, options) {
   const result = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
   const data = await result.json();
-  if (!result.ok) throw new Error(data.error || "Request failed.");
+  if (!result.ok) throw new Error(data.error || data.detail || "Request failed.");
   return data;
 }
 function render(data) {
@@ -27,7 +44,7 @@ function renderAnalysis(analysis) {
   const panel = $("analysisPanel");
   if (!analysis) { panel.innerHTML = `<p class="eyebrow">EXTRACTION ENGINE</p><h2>Upload a resume to unlock evidence analysis.</h2><p>CareerCanvas will extract selectable text, detect skills and sections, then use those signals to improve your profile.</p>`; return; }
   const statusClass = analysis.status === "extracted" ? "analysis-good" : "analysis-warn";
-  panel.innerHTML = `<div class="analysis-heading"><div><p class="eyebrow">EXTRACTION ENGINE</p><h2>Resume intelligence</h2></div><strong class="${statusClass}">${analysis.completeness_score}% complete</strong></div><p>${escapeHtml(analysis.message)}</p><div class="analysis-grid"><div><small>DETECTED SKILLS</small><strong>${analysis.detected_skills.length ? analysis.detected_skills.map(escapeHtml).join(" · ") : "None detected"}</strong></div><div><small>SECTIONS FOUND</small><strong>${analysis.sections.length ? analysis.sections.map(escapeHtml).join(" · ") : "None detected"}</strong></div><div><small>CONTACT SIGNAL</small><strong>${escapeHtml(analysis.contact.email || "No email detected")}</strong></div></div>${analysis.text_preview ? `<details><summary>View extracted text preview</summary><p class="preview">${escapeHtml(analysis.text_preview)}</p></details>` : ""}`;
+  panel.innerHTML = `<div class="analysis-heading"><div><p class="eyebrow">EXTRACTION ENGINE</p><h2>Resume intelligence</h2></div><strong class="${statusClass}">${analysis.completeness_score}% complete</strong></div><p>${escapeHtml(analysis.message)}</p><div class="analysis-progress"><span style="width:${analysis.completeness_score}%"></span></div><div class="analysis-grid"><div><small>DETECTED SKILLS</small><strong>${analysis.detected_skills.length ? analysis.detected_skills.map(escapeHtml).join(" · ") : "None detected"}</strong></div><div><small>SECTIONS FOUND</small><strong>${analysis.sections.length ? analysis.sections.map(escapeHtml).join(" · ") : "None detected"}</strong></div><div><small>CONTACT SIGNAL</small><strong>${escapeHtml(analysis.contact.email || analysis.contact.phone || "No contact detected")}</strong></div><div><small>TEXT SIGNAL</small><strong>${analysis.word_count || 0} words · ${analysis.status === "extracted" ? "evaluated" : "needs text"}</strong></div></div>${analysis.text_preview ? `<details><summary>View extracted text preview</summary><p class="preview">${escapeHtml(analysis.text_preview)}</p></details>` : ""}`;
 }
 function renderFiles(files) {
   $("fileList").innerHTML = files.length ? files.map((file) => `<div class="file-item"><span class="file-icon">↗</span><span><strong>${escapeHtml(file.name)}</strong><small>${(file.size / 1024).toFixed(1)} KB</small></span><button data-delete-file="${escapeHtml(file.name)}" aria-label="Remove file">×</button></div>`).join("") : `<p class="empty-files">No evidence uploaded yet.</p>`;
@@ -45,8 +62,10 @@ $("downloadButton").addEventListener("click", () => { const report = { ...state,
 document.getElementById("fileInput").addEventListener("change", async (event) => {
   for (const file of event.target.files) {
     if (file.size > 6 * 1024 * 1024) { alert(`${file.name} is larger than 6 MB.`); continue; }
+    $("saveState").textContent = `Analyzing ${file.name}…`;
+    $("analysisPanel").classList.add("is-processing");
     const encoded = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result).split(",")[1]); reader.onerror = reject; reader.readAsDataURL(file); });
-    try { render(await api("/api/uploads", { method: "POST", body: JSON.stringify({ name: file.name, content: encoded }) })); } catch (error) { alert(error.message); }
+    try { render(await api("/api/uploads", { method: "POST", body: JSON.stringify({ name: file.name, content: encoded }) })); $("saveState").textContent = "Evidence evaluated just now"; } catch (error) { alert(error.message); $("saveState").textContent = "Analysis failed"; } finally { $("analysisPanel").classList.remove("is-processing"); }
   }
   event.target.value = "";
 });
