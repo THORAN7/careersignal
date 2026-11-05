@@ -14,16 +14,16 @@
 </p>
 
 <p>
-  <a href="#-quick-start">Quick start</a> ·
-  <a href="#-how-it-works">How it works</a> ·
-  <a href="#-privacy--responsible-use">Privacy</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#privacy-and-responsible-use">Privacy</a> ·
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-ready-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)
-![Local first](https://img.shields.io/badge/privacy-local--first-8b5cf6?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-ready-009688?style=flat-square&logo=fastapi&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)
+![Local first](https://img.shields.io/badge/privacy-local--first-8b5cf6?style=flat-square)
 
 </div>
 
@@ -31,7 +31,7 @@
 
 > **CareerSignal is not a generic resume generator.** It analyzes the evidence you provide, identifies the distance between your current signal and a target role, and turns that distance into an actionable learning and interview plan.
 
-## ✨ What it does
+## What it does
 
 | Input | Output |
 | --- | --- |
@@ -49,7 +49,7 @@
 - **Clean architecture** — `src/` layout, typed configuration, FastAPI routes, deterministic analysis, and automated checks.
 - **Animated experience** — responsive dashboard, processing states, theme toggle, and polished evidence feedback.
 
-## 🎬 Product flow
+## Product flow
 
 ```mermaid
 flowchart LR
@@ -63,7 +63,7 @@ flowchart LR
     E --> I[Interview lab]
 ```
 
-## 🚀 Quick start
+## Quick start
 
 ### Windows PowerShell
 
@@ -105,7 +105,7 @@ make typecheck
 
 On standard Windows PowerShell, use the direct Python commands above.
 
-## 🧠 How it works
+## How it works
 
 1. **Start with your own signal.** Enter profile details or upload evidence.
 2. **Analyze locally.** CareerSignal extracts text from supported documents and detects sections, skills, contact signals, word count, and completeness.
@@ -132,7 +132,7 @@ email or phone signal is displayed as an empty state instead of breaking the das
 CareerSignal extracts these signals locally; they are not sent to an external provider
 unless hosted generation is explicitly enabled.
 
-## 🗂️ Repository layout
+## Repository layout
 
 ```text
 career-signal/
@@ -146,7 +146,7 @@ career-signal/
 └── Makefile                # Repeatable developer commands
 ```
 
-## 🔐 Privacy & responsible use
+## Privacy and responsible use
 
 - Runtime profiles and uploaded files stay under ignored `data/` by default.
 - The server binds to `127.0.0.1` by default.
@@ -154,7 +154,7 @@ career-signal/
 - Never use generated wording to claim experience, achievements, skills, or qualifications you do not have.
 - CareerSignal provides guidance, not hiring guarantees. Review every generated statement before sharing it.
 
-## 🧪 Development
+## Development
 
 ```bash
 python -m pytest -q
@@ -165,19 +165,7 @@ python -m mypy
 
 See [`docs/DECISIONS.md`](docs/DECISIONS.md) for architectural decisions and [`LICENSE`](LICENSE) for licensing terms.
 
-## 🗺️ Roadmap
-
-- [x] Local-first profile and evidence workflow
-- [x] PDF, DOCX, TXT, Markdown, CSV, and JSON extraction
-- [x] Word-boundary skill detection and upload analysis
-- [x] Responsive animated dashboard
-- [x] Typed canonical `CareerReport` model
-- [x] Role blueprint library and computed skill-gap engine
-- [x] Markdown, DOCX, and PDF exports from one report object
-- [x] Optional OpenAI-compatible provider with grounded JSON output
-- [x] CI matrix for Python 3.11–3.13, Docker build, and accessibility contract tests
-
-## 📦 Export API
+## Export API
 
 The dashboard and every export are generated from the same `CareerReport` object:
 
@@ -194,7 +182,7 @@ engine is deterministic and offline. Hosted generation is opt-in through the
 provider interface and receives the grounded report context rather than inventing
 skills, employers, degrees, or achievements.
 
-## 🐳 Docker
+## Docker
 
 ```bash
 docker compose up --build
@@ -203,11 +191,11 @@ docker compose up --build
 The container runs as a non-root user and includes a health check at
 `/api/health`.
 
-## 🤝 Contributing
+## Contributing
 
 Issues, documentation improvements, UI refinements, and test coverage are welcome. Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
 
-## 📄 License
+## License
 
 CareerSignal is released under the [MIT License](LICENSE).
 
