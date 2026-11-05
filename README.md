@@ -114,6 +114,24 @@ On standard Windows PowerShell, use the direct Python commands above.
 
 The current offline provider requires no credentials. Hosted LLM support is intentionally opt-in and should only be enabled after reviewing the data-sharing implications.
 
+### Resume intelligence signals
+
+Resume analysis preserves the extracted contact signals in the canonical report:
+
+```json
+{
+  "contact": {
+    "email": "student@example.com",
+    "phone": "+1 555 0100"
+  }
+}
+```
+
+The browser also handles older or incomplete analysis payloads safely, so a missing
+email or phone signal is displayed as an empty state instead of breaking the dashboard.
+CareerSignal extracts these signals locally; they are not sent to an external provider
+unless hosted generation is explicitly enabled.
+
 ## 🗂️ Repository layout
 
 ```text
